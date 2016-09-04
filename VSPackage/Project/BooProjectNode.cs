@@ -37,7 +37,7 @@ namespace Hill30.BooProject.Project
     [ComVisible(true)]
     public interface IProjectManager
     {
-        void Compile();
+        CompilerManager Compiler();
         IFileNode GetFileNode(string path);
     }
 
@@ -261,9 +261,9 @@ namespace Hill30.BooProject.Project
 
         #region IProjectManager Members
 
-        public void Compile()
+        public CompilerManager Compiler()
         {
-            compilerManager.Compile();
+            return compilerManager;
         }
 
         public IFileNode GetFileNode(string path)

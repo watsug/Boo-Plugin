@@ -25,6 +25,7 @@ namespace Hill30.BooProject.LanguageService
     {
         private readonly IFileNode fileNode;
         private readonly IProjectManager projectManager;
+        private readonly Hill30.BooProject.Compilation.CompilerManager _compilerManager;
 
         public BooSource(BooLanguageService service, string filePath, IVsTextLines buffer, Microsoft.VisualStudio.Package.Colorizer colorizer)
             : base(service, buffer, colorizer)
@@ -37,6 +38,7 @@ namespace Hill30.BooProject.LanguageService
                     new Action<BooLanguageService>(SynchronizeDropDowns), 
                     new object[] {service}
                                            );
+            _compilerManager = projectManager.Compiler();
         }
 
         static void SynchronizeDropDowns(BooLanguageService service)
@@ -46,7 +48,7 @@ namespace Hill30.BooProject.LanguageService
 
         internal void Compile(ParseRequest req)
         {
-            projectManager.Compile();
+            _compilerManager.Compile();
         }
 
         public override void OnChangeLineText(TextLineChange[] lineChange, int last)

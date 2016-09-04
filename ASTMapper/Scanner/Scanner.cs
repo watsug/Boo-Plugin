@@ -44,8 +44,10 @@ namespace Hill30.Boo.ASTMapper.Scanner
                 {
                     token = lexer.NextToken();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    if (e.Message.StartsWith("unexpected char:"))
+                        return false;
                     tokenInfo.StartIndex = current;
                     tokenInfo.EndIndex = endIndex ;
                     tokenInfo.Type = TokenType.Text;  // it has to be Text rather than Comment, otherwise there will be no notification for the typing inside the token
@@ -112,7 +114,10 @@ namespace Hill30.Boo.ASTMapper.Scanner
             }
 
             tokenInfo.StartIndex = offset + token.GetMappedColumn() - 1;
-            tokenInfo.EndIndex = Math.Min(endIndex, offset + quotes + token.GetMappedColumn() - 1 + token.getText().Length - 1);
+            if (token.getText() == null)
+                tokenInfo.EndIndex = tokenInfo.StartIndex;
+            else
+                tokenInfo.EndIndex = Math.Min(endIndex, offset + quotes + token.GetMappedColumn() - 1 + token.getText().Length - 1);
 
             current = tokenInfo.EndIndex + 1;
             return true;
