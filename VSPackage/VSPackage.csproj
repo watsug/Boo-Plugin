@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="BooISh\BooIShWrapper.cs" />
     <Compile Include="BooISh\Window.cs" />
+    <Compile Include="LanguageService\BooEditorFactory.cs" />
     <Compile Include="LanguageService\CompilerManager.cs">
       <SubType>Code</SubType>
     </Compile>

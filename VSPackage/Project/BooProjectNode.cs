@@ -118,6 +118,16 @@ namespace Hill30.BooProject.Project
             return result;
         }
 
+        /// <summary>
+        /// Defines if Node has Designer. By default we do not support designers for nodes
+        /// </summary>
+        /// <param name="itemPath">Path to item to query for designer support</param>
+        /// <returns>true if node has designer</returns>
+        public override bool NodeHasDesigner(string itemPath)
+        {
+            return itemPath.EndsWith(".Designer.boo");
+        }
+
         protected override Guid[] GetConfigurationDependentPropertyPages()
         {
             var result = new Guid[1];

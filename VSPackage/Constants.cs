@@ -23,6 +23,10 @@ namespace Hill30.BooProject
 
         public const string GuidBooProjectPkgString = "3ed37b82-3194-4ca8-96b4-d4e3feb8a35d";
         public const string GuidBooProjectCmdSetString = "ec06ff5c-8707-4572-9d77-348e88d3eebf";
+        public const string GuidBooEditorFactoryString = "5621BA4F-41D9-414C-8D85-DAA2229B782D";
+
+        public const string LOGVIEWID_Designer = "{7651a702-06e5-11d1-8ebd-00a0c90f26ea}";
+        public const string LOGVIEWID_Code = "{7651a701-06e5-11d1-8ebd-00a0c90f26ea}";
 
         public static readonly Guid GuidBooProjectCmdSet = new Guid(GuidBooProjectCmdSetString);
     };
