@@ -54,9 +54,10 @@ namespace Hill30.BooProject
     [ProvideService(typeof(LanguageService.BooLanguageService))]
     [ProvideLanguageExtension(typeof(LanguageService.BooLanguageService), ".boo")]
 
-    // Form designer support
-    //[ProvideEditorLogicalView(typeof(LanguageService.BooEditorFactory), Constants.LOGVIEWID_Designer)]
-    //[ProvideEditorLogicalView(typeof(LanguageService.BooEditorFactory), Constants.LOGVIEWID_Code)]
+    //Form designer support
+    [ProvideEditorExtension(typeof(BooEditorFactory), ".boo", 32)]
+    [ProvideEditorLogicalView(typeof(LanguageService.BooEditorFactory), Constants.LOGVIEWID_Designer)]
+    [ProvideEditorLogicalView(typeof(LanguageService.BooEditorFactory), Constants.LOGVIEWID_Code)]
 
     [ProvideLanguageServiceAttribute(typeof(LanguageService.BooLanguageService),
                              Constants.LanguageName,
@@ -89,7 +90,7 @@ namespace Hill30.BooProject
             LanguageService.BooLanguageService.Register(this);
 
             RegisterProjectFactory(new Project.BooProjectFactory(this));
-            //RegisterEditorFactory(new BooEditorFactory(this));
+            RegisterEditorFactory(new BooEditorFactory(this));
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;

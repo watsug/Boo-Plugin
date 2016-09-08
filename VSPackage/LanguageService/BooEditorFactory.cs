@@ -16,6 +16,8 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Hill30.BooProject.LanguageService
 {
+    [ProvideView(LogicalView.Code, null)]
+    [ProvideView(LogicalView.Designer, "Design")]
     [Guid(Constants.GuidBooEditorFactoryString)]
     class BooEditorFactory : IVsEditorFactory
     {
