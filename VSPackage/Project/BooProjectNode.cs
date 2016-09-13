@@ -125,7 +125,8 @@ namespace Hill30.BooProject.Project
         /// <returns>true if node has designer</returns>
         public override bool NodeHasDesigner(string itemPath)
         {
-            return itemPath.EndsWith(".Designer.boo");
+            var result = itemPath.EndsWith(".Designer.boo");
+            return result;
         }
 
         protected override Guid[] GetConfigurationDependentPropertyPages()
@@ -190,6 +191,9 @@ namespace Hill30.BooProject.Project
             node.OleServiceProvider.AddService(typeof(ProjectItem), node.ServiceCreator, false);
             node.OleServiceProvider.AddService(typeof(VSProject), new OleServiceProvider.ServiceCreatorCallback(CreateServices), false);
             compilerManager.SubmitForCompile(node);
+            var include = item.GetMetadata(ProjectFileConstants.Include);
+            if (IsCodeFile(include))
+                node.OleServiceProvider.AddService(typeof(SVSMDCodeDomProvider), node.ServiceCreator, false);
             return node;
         }
 

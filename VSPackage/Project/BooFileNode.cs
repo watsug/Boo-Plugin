@@ -15,13 +15,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Hill30.Boo.ASTMapper;
 using Hill30.Boo.ASTMapper.AST;
 using Hill30.Boo.ASTMapper.AST.Nodes;
 using Hill30.BooProject.LanguageService;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -58,6 +61,14 @@ namespace Hill30.BooProject.Project
                 hidden = true;
             else
                 originalSnapshot = buffer.CurrentSnapshot;
+        }
+
+        protected override void DoDefaultAction()
+        {
+            FileDocumentManager manager = this.GetDocumentManager() as FileDocumentManager;
+            Guid viewGuid = (this.HasDesigner ? VSConstants.LOGVIEWID_Designer : VSConstants.LOGVIEWID_Code);
+            IVsWindowFrame frame;
+            manager.Open(false, false, viewGuid, out frame, WindowFrameShowAction.Show);
         }
 
         public string GetCompilerInput()
@@ -111,14 +122,29 @@ namespace Hill30.BooProject.Project
             get { return CreateServices; }
         }
 
+        private BooProjectNode GetProjectReferences()
+        {
+            HierarchyNode parentNode = this;
+            while (!(parentNode is BooProjectNode))
+                parentNode = parentNode.Parent;
+            return (BooProjectNode)parentNode;
+        }
+
         private object CreateServices(Type serviceType)
         {
-            object service = null;
             if (typeof(EnvDTE.ProjectItem) == serviceType)
             {
-                service = GetAutomationObject();
+                return GetAutomationObject();
             }
-            return service;
+            if (typeof(SVSMDCodeDomProvider) == serviceType)
+            {
+                var project = GetProjectReferences();
+                var child = project.FirstChild;
+                while (!(child is ReferenceContainerNode))
+                    child = child.NextSibling;
+                return new VSMDBooCodeProvider((ReferenceContainerNode)child);
+            }
+            return null;
         }
         
         #endregion

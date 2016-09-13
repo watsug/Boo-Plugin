@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell.Interop;
 using Hill30.BooProject.LanguageService;
+using Microsoft.VisualStudio;
 
 namespace Hill30.BooProject
 {
