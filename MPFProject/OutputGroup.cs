@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.Project
             const string generateDependencyList = "AllProjectOutputGroups";
             if(project.BuildProject.Targets.ContainsKey(generateDependencyList))
             {
-                bool succeeded = false;
+                bool succeeded;
                 project.BuildTarget(generateDependencyList, out succeeded);
                 Debug.Assert(succeeded, "Failed to build target: " + generateDependencyList);
             }

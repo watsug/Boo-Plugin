@@ -107,7 +107,7 @@ namespace Hill30.BooProject.LanguageService
 
         public override IScanner GetScanner(IVsTextLines buffer)
         {
-            return new Boo.ASTMapper.Scanner.Scanner(() => GetLanguagePreferences().TabSize);
+            return new Boo.ASTMapper.Scanner.Scanner(() => /*GetLanguagePreferences().TabSize*/ 4);
         }
 
         public override string Name
@@ -131,18 +131,6 @@ namespace Hill30.BooProject.LanguageService
                 source.Compile(req);
 
             return new BooAuthoringScope(source);
-        }
-
-        public override int GetItemCount(out int count)
-        {
-            count = Formats.ColorableItems.Length - 1;
-            return VSConstants.S_OK;
-        }
-
-        public override int GetColorableItem(int index, out IVsColorableItem item)
-        {
-            item = Formats.ColorableItems[index];
-            return VSConstants.S_OK;
         }
 
         public override TypeAndMemberDropdownBars CreateDropDownHelper(IVsTextView forView)

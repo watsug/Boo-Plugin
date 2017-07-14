@@ -176,11 +176,11 @@ namespace Hill30.Boo.ASTMapper
                 startLine * lineSize + startIndex,
                 endIndex - startIndex);
 
-            if (tokenMap.Count > 0
-                && tokenMap[tokenMap.Count() - 1].Index >= cluster.Index)
-                throw new ArgumentException("Token Mapping order");
+            if (!(tokenMap.Count > 0
+                && tokenMap[tokenMap.Count() - 1].Index >= cluster.Index))
+                //throw new ArgumentException("Token Mapping order");
 
-            tokenMap.Add(cluster);
+                tokenMap.Add(cluster);
             return new Tuple<int, int>(endLine, endIndex);
         }
 

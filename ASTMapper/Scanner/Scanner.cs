@@ -153,6 +153,7 @@ namespace Hill30.Boo.ASTMapper.Scanner
 
                 case BooLexer.DOUBLE_QUOTED_STRING:
                 case BooLexer.SINGLE_QUOTED_STRING:
+                case BooLexer.BACKTICK_QUOTED_STRING:
                     return BooTokenType.String;
 
                 case BooLexer.DOT: return BooTokenType.MemberSelector;
@@ -174,6 +175,7 @@ namespace Hill30.Boo.ASTMapper.Scanner
                 case BooLexer.ENUM:
                 case BooLexer.EVENT:
                 case BooLexer.EXCEPT:
+                case BooLexer.FAILURE:
                 case BooLexer.FALSE:
                 case BooLexer.FINAL:
                 case BooLexer.FOR:

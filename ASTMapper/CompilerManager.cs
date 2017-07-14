@@ -14,8 +14,10 @@
 //   limitations under the License.
 
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using Boo.Lang.Compiler;
+using Boo.Lang.Compiler.Steps;
 using Boo.Lang.Environments;
 using Boo.Lang.Parser;
 
@@ -26,9 +28,10 @@ namespace Hill30.Boo.ASTMapper
         public static void Compile(int tabSize, IEnumerable<Assembly> assemblies, IEnumerable<CompileResults> codeFiles)
         {
 
-            var pipeline = CompilerPipeline.GetPipeline("compile");
+			var pipeline = CompilerPipeline.GetPipeline("checkforerrors");
             pipeline.BreakOnErrors = false;
-            var compiler = new BooCompiler(new CompilerParameters(false) { Pipeline = pipeline });
+			pipeline.Replace(typeof(IntroduceGlobalNamespaces), new Steps.IntroduceGlobalNamespaces_Plugin());
+            var compiler = new BooCompiler(new CompilerParameters(true) { Pipeline = pipeline });
 
             compiler.Parameters.Environment =
                  new ClosedEnvironment(
@@ -38,7 +41,7 @@ namespace Hill30.Boo.ASTMapper
                          });            
             
             compiler.Parameters.Input.Clear();
-            compiler.Parameters.References.Clear();
+            //compiler.Parameters.References.Clear();
 
             foreach (var assembly in assemblies)
                 compiler.Parameters.References.Add(assembly);

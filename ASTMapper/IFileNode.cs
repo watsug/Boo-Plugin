@@ -48,5 +48,15 @@ namespace Hill30.Boo.ASTMapper
         void Bind(ITextBuffer textBuffer);
 
         void SubmitForCompile();
+
+        string Url { get; }
+
+        string ItemName { get; }
+
+        string GetCompilerInput();
+
+        CompileResults GetCompileResults();
+
+        void SetCompilerResults(CompileResults newResults);
     }
 }

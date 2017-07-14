@@ -14,13 +14,14 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>4.0</OldToolsVersion>
+    <OldToolsVersion>12.0</OldToolsVersion>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,7 +34,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -65,6 +65,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Boo_files\Boo.Lang.CodeDom.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.Compiler, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67, processorArchitecture=MSIL" />
     <Reference Include="Boo.Microsoft.Build.Tasks">
       <HintPath>D:\SDL-1.3.0-4423\boo\build\Boo.Microsoft.Build.Tasks.dll</HintPath>
     </Reference>
@@ -135,6 +136,7 @@
     </Compile>
     <Compile Include="BooISh\BooIShWrapper.cs" />
     <Compile Include="BooISh\Window.cs" />
+    <Compile Include="LanguageService\BooCodeDomHelper.cs" />
     <Compile Include="LanguageService\BooEditorFactory.cs" />
     <Compile Include="LanguageService\CompilerManager.cs">
       <SubType>Code</SubType>
@@ -152,10 +154,14 @@
     <Compile Include="LanguageService\Colorizer\Tagger.cs" />
     <Compile Include="LanguageService\Colorizer\TaggerProvider.cs" />
     <Compile Include="LanguageService\BooLanguageService.cs" />
+    <Compile Include="LanguageService\VSBooCodeProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="LanguageService\VSMDBooCodeProvider.cs" />
     <Compile Include="Project\Attributes\LocDisplayNameAttribute.cs" />
     <Compile Include="Project\Attributes\ResourcesCategoryAttribute.cs" />
     <Compile Include="Project\Attributes\ResourcesDescriptionAttribute.cs" />
+    <Compile Include="Project\BooDependentFileNode.cs" />
     <Compile Include="Project\BooFileNode.cs" />
     <Compile Include="Project\BooProjectFactory.cs" />
     <Compile Include="Project\ProjectProperties\Application.cs" />
@@ -204,6 +210,7 @@
     <Content Include="Boo_files\Boo.Lang.CodeDom.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Boo_files\Boo.Lang.CodeDom.pdb" />
     <Content Include="Boo_files\Boo.Lang.Compiler.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -233,6 +240,21 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Boo_files\booc.rsp">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Boo_files\boocNET45.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Boo_files\boocNET451.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Boo_files\boocNET452.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Boo_files\boocNET46.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Boo_files\boocNET461.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Boo_files\booi.exe.config">
@@ -283,9 +305,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Boo_files\booc.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Boo_files\boocNET40.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Boo_files\Boo.MSBuildUtilities.dll">

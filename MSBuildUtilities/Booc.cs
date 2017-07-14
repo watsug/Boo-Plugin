@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -155,22 +156,39 @@ namespace Hill30.Boo.MSBuildUtilities
             get { return AssemblyName + ".exe"; }
         }
 
+		private readonly Dictionary<string, string> _assemblyNames = new Dictionary<string, string>
+		{
+			{"v4.5", "boocNET45"},
+			{"v4.5.1", "boocNET451"},
+			{"v4.5.2", "boocNET452"},
+			{"v4.6", "boocNET46"},
+			{"v4.6.1", "boocNET461"},
+		};
+
         private string AssemblyName
         {
-            get { return TargetFrameworkVersion == "v4.0" ? "boocNET40" : "boocNET35"; }
+	        get
+	        {
+		        string result;
+		        if (_assemblyNames.TryGetValue(TargetFrameworkVersion, out result))
+			        return result;
+		        throw new ArgumentException(string.Format("Unknown runtime version {0}.", TargetFrameworkVersion));
+	        }
         }
 
         protected override string GenerateCommandLineCommands()
         {
             var commandLine = new CommandLineBuilder();
 
-            commandLine.AppendSwitchIfNotNull("-t:", TargetType.ToLower());
+			commandLine.AppendSwitch("-p:\"delay\"");
+
+			commandLine.AppendSwitchIfNotNull("-t:", TargetType.ToLower());
             commandLine.AppendSwitchIfNotNull("-o:", OutputAssembly);
             commandLine.AppendSwitchIfNotNull("-c:", Culture);
             commandLine.AppendSwitchIfNotNull("-srcdir:", SourceDirectory);
             commandLine.AppendSwitchIfNotNull("-keyfile:", KeyFile);
             commandLine.AppendSwitchIfNotNull("-keycontainer:", KeyContainer);
-            commandLine.AppendSwitchIfNotNull("-p:", Pipeline);
+            //commandLine.AppendSwitchIfNotNull("-p:", Pipeline);
             commandLine.AppendSwitchIfNotNull("-define:", DefineSymbols);
             commandLine.AppendSwitchIfNotNull("-lib:", AdditionalLibPaths, ",");
             commandLine.AppendSwitchIfNotNull("-nowarn:", DisabledWarnings);
@@ -230,7 +248,7 @@ namespace Hill30.Boo.MSBuildUtilities
                         break;
                 }
 		
-		    if (!String.IsNullOrEmpty(Verbosity) )
+		    if (!string.IsNullOrEmpty(Verbosity) )
                 switch (Verbosity.ToLower())
                 {
                     case "normal":
@@ -262,7 +280,7 @@ namespace Hill30.Boo.MSBuildUtilities
         /// Captures the file, line, column, code, and message from a BOO warning
         /// in the form of: Program.boo(1,1): BCW0000: WARNING: This is a warning.
         /// </summary>
-        private Regex warningPattern = 
+        private readonly Regex warningPattern = 
             new Regex(
                 "^(?<file>.*?)(\\((?<line>\\d+),(?<column>\\d+)\\):)?" +
                 "(\\s?)(?<code>BCW\\d{4}):(\\s)WARNING:(\\s)(?<message>.*)$",

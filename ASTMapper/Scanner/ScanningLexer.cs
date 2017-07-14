@@ -28,7 +28,11 @@ namespace Hill30.Boo.ASTMapper.Scanner
         public ScanningLexer(int tabSize, string source)
         {
             source += " "; // No idea why but without this extra space the lexer sometimes throws an exception
-            lexer = BooParser.CreateBooLexer(tabSize, "Line Scanner", new StringReader(source));
+            Func<BooLexer, antlr.TokenStream> makeFilter = lexer => {
+                lexer.WantAllWhitespace = true;
+                return new WhitespacePreservingTokenStreamFilter(lexer, BooParserBase.EOL, BooParserBase.END, BooParserBase.ID);
+            };
+            lexer = BooParser.CreateFilteredBooLexer(tabSize, "Line Scanner", new StringReader(source), makeFilter);
             var sourcePos = 0;
             var mappedPos = 0;
             var positionList = new List<int>();

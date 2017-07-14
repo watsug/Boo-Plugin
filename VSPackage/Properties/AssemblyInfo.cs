@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -34,3 +35,6 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("BooProject_IntegrationTests, PublicKey=00240000048000009400000006020000002400005253413100040000010001001125f975fab37e7cff70c520c9fb8bfc8d7489d5bfa423820a164623af7c5d18d77f6dc83e8731a33284c125b4268d6bcc8f464718d9b92b7ac3a57bfce95c99509dc95cb366ffde14781d2dcfccf8e62ce22af9494bd21021deb36eb5ec8d1450dc3f197ac86a8c8d1c12ef99bdfd822d317f31b32eef00fcac9515c49091d3")]
 [assembly: InternalsVisibleTo("BooProject_UnitTests, PublicKey=00240000048000009400000006020000002400005253413100040000010001001125f975fab37e7cff70c520c9fb8bfc8d7489d5bfa423820a164623af7c5d18d77f6dc83e8731a33284c125b4268d6bcc8f464718d9b92b7ac3a57bfce95c99509dc95cb366ffde14781d2dcfccf8e62ce22af9494bd21021deb36eb5ec8d1450dc3f197ac86a8c8d1c12ef99bdfd822d317f31b32eef00fcac9515c49091d3")]
+
+[assembly: ProvideCodeBase(AssemblyName = "Boo.Lang.Extensions",
+Version = "2.0.9.4", CodeBase = "$PackageFolder$\\Boo.Lang.Extensions.dll")]

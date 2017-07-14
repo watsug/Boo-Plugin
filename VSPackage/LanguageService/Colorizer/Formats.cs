@@ -45,6 +45,7 @@ namespace Hill30.BooProject.LanguageService.Colorizer
             public BooKeywordFormat()
             {
                 ForegroundColor = Colors.Blue;
+                BackgroundColor = Colors.Beige;
             }
         }
 
@@ -104,61 +105,5 @@ namespace Hill30.BooProject.LanguageService.Colorizer
                 ForegroundColor = Colors.Fuchsia;
             }
         }
-
-        // even though the "custom" colors defined here are identical to stock colors, it is necessary 
-        // to configure the package to provide them as "custom" because stock colors trump colors provided
-        // by classifier
-        public static readonly ColorableItem[] ColorableItems = new[]
-                                                       {
-                                                           new ColorableItem("Boo – Text",
-                                                                             "Text",
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_FG,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Empty,
-                                                                             System.Drawing.Color.Empty,
-                                                                             FONTFLAGS.FF_DEFAULT),
-                                                           new ColorableItem("Boo – Keyword",
-                                                                             "Keyword",
-                                                                             COLORINDEX.CI_BLUE,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Blue,
-                                                                             System.Drawing.Color.White,
-                                                                             FONTFLAGS.FF_DEFAULT),
-                                                           new ColorableItem("Boo – Comment",
-                                                                             "Comment",
-                                                                             COLORINDEX.CI_GREEN,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Green,
-                                                                             System.Drawing.Color.White,
-                                                                             FONTFLAGS.FF_DEFAULT),
-                                                           new ColorableItem("Boo – Identifier",
-                                                                             "Identifier",
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_FG,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Black,
-                                                                             System.Drawing.Color.White,
-                                                                             FONTFLAGS.FF_DEFAULT),
-                                                           new ColorableItem("Boo – String",
-                                                                             "String",
-                                                                             COLORINDEX.CI_MAROON,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Maroon,
-                                                                             System.Drawing.Color.White,
-                                                                             FONTFLAGS.FF_DEFAULT),
-                                                           new ColorableItem("Boo – Number",
-                                                                             "Number",
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_FG,
-                                                                             COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                                             System.Drawing.Color.Black,
-                                                                             System.Drawing.Color.White,
-                                                                             FONTFLAGS.FF_DEFAULT)//,
-                                                           //new ColorableItem("Boo – Type",
-                                                           //                  "Type",
-                                                           //                  COLORINDEX.CI_AQUAMARINE,
-                                                           //                  COLORINDEX.CI_SYSPLAINTEXT_BK,
-                                                           //                  System.Drawing.Color.SteelBlue,
-                                                           //                  System.Drawing.Color.White,
-                                                           //                  FONTFLAGS.FF_DEFAULT)
-                                                       };
     }
 }

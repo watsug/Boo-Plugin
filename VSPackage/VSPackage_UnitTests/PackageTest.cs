@@ -45,7 +45,16 @@ namespace BooProject_UnitTests
 
             // Create a basic service provider
             OleServiceProvider serviceProvider = OleServiceProvider.CreateOleServiceProviderWithBasicServices();
+            BaseMock activityLogMock =
+                new GenericMockFactory(
+                    "MockVsActivityLog",
+                    new[] { typeof(Microsoft.VisualStudio.Shell.Interop.IVsActivityLog) }
+                    ).GetInstance();
 
+            serviceProvider.AddService(
+                typeof(Microsoft.VisualStudio.Shell.Interop.SVsActivityLog),
+                activityLogMock,
+                true);
             // Site the package
             Assert.AreEqual(0, package.SetSite(serviceProvider), "SetSite did not return S_OK");
 
