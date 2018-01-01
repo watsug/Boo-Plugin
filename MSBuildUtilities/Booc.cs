@@ -180,7 +180,7 @@ namespace Hill30.Boo.MSBuildUtilities
         {
             var commandLine = new CommandLineBuilder();
 
-			commandLine.AppendSwitch("-p:\"delay\"");
+			//commandLine.AppendSwitch("-p:\"delay\"");
 
 			commandLine.AppendSwitchIfNotNull("-t:", TargetType.ToLower());
             commandLine.AppendSwitchIfNotNull("-o:", OutputAssembly);
@@ -188,7 +188,7 @@ namespace Hill30.Boo.MSBuildUtilities
             commandLine.AppendSwitchIfNotNull("-srcdir:", SourceDirectory);
             commandLine.AppendSwitchIfNotNull("-keyfile:", KeyFile);
             commandLine.AppendSwitchIfNotNull("-keycontainer:", KeyContainer);
-            //commandLine.AppendSwitchIfNotNull("-p:", Pipeline);
+            commandLine.AppendSwitchIfNotNull("-p:", Pipeline);
             commandLine.AppendSwitchIfNotNull("-define:", DefineSymbols);
             commandLine.AppendSwitchIfNotNull("-lib:", AdditionalLibPaths, ",");
             commandLine.AppendSwitchIfNotNull("-nowarn:", DisabledWarnings);

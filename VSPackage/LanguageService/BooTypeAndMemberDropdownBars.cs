@@ -95,8 +95,10 @@ namespace Hill30.BooProject.LanguageService
                 col,
                 ref selectedType,
                 ref selectedMember,
-                (mIndex, attr) =>
-                    ((DropDownMember)dropDownMembers[mIndex]).FontAttr = attr);
+                (mIndex, attr) => {
+                    if (mIndex < dropDownMembers.Count)
+                        ((DropDownMember)dropDownMembers[mIndex]).FontAttr = attr;
+                });
            
             return true;
         }

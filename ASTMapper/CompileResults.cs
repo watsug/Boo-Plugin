@@ -196,7 +196,7 @@ namespace Hill30.Boo.ASTMapper
                 line = positionMap.Length;
             if (column == -1 || column > positionMap[line - 1].Length)
                 column = positionMap[line - 1].Length;
-            return new BufferPoint { Line = line - 1, Column = positionMap[line - 1][column - 1] };
+            return new BufferPoint { Line = line - 1, Column = /*positionMap[line - 1][column - 1]*/ column - 1 };
         }
 
         internal BufferPoint LocationToPoint(SourceLocation location)

@@ -61,6 +61,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Boo.Lang, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Boo_files\Boo.Lang.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang.CodeDom, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Boo_files\Boo.Lang.CodeDom.dll</HintPath>
