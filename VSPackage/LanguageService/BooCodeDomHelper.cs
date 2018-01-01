@@ -95,42 +95,49 @@ namespace Hill30.BooProject.LanguageService
         /// <param name="compileUnit"></param>
         /// <param name="designerCompileUnit"></param>
         /// <returns></returns>
-        internal static CodeCompileUnit MergeCodeCompileUnit(CodeCompileUnit compileUnit, bool baseIsDesignForm)
+        internal static CodeCompileUnit MergeCodeCompileUnit(CodeCompileUnit compileUnit, CodeCompileUnit designerCompileUnit)
+        {
+            return MergeCodeCompileUnit(null, compileUnit, designerCompileUnit);
+        }
+
+        internal static CodeCompileUnit MergeCodeCompileUnit(CodeCompileUnit mergedCodeCompileUnit, CodeCompileUnit compileUnit, CodeCompileUnit designerCompileUnit)
         {
             // Create the merged CodeCompileUnit
-            var mergedCodeCompileUnit = new CodeCompileUnit();
+            if (mergedCodeCompileUnit == null)
+                mergedCodeCompileUnit = new CodeCompileUnit();
             //
             CodeNamespace designerNamespace;
-            CodeTypeDeclaration designerClass = FindDesignerClass(compileUnit, out designerNamespace);
+            CodeTypeDeclaration designerClass = FindDesignerClass(designerCompileUnit, out designerNamespace);
             if (designerClass != null)
             {
                 // Do the same with the form
-                var mainClass = FindMainClass(compileUnit, designerNamespace, designerClass.Name);
+                CodeNamespace nameSpace;
+                CodeTypeDeclaration className;
+                BooCodeDomHelper.HasPartialClass(compileUnit, out nameSpace, out className);
                 // and merge only if ...
-                if (mainClass != null)
+                if ((String.Compare(designerNamespace.Name, nameSpace.Name, true) == 0) &&
+                    (String.Compare(designerClass.Name, className.Name, true) == 0))
                 {
                     // Ok, same Namespace & same Class : Merge !
 
                     // So, the "main" class is...
-                    CodeTypeDeclaration mergedType = new CodeTypeDeclaration(mainClass.Name);
+                    CodeTypeDeclaration mergedType = new CodeTypeDeclaration(className.Name);
                     // And does inherit from
-                    mergedType.BaseTypes.AddRange(mainClass.BaseTypes);
-                    mergedType.TypeAttributes = mainClass.TypeAttributes;
+                    mergedType.BaseTypes.AddRange(className.BaseTypes);
+                    mergedType.TypeAttributes = className.TypeAttributes;
                     // Now, read members from each side, and put a stamp on each
                     foreach (CodeTypeMember member in designerClass.Members)
                     {
                         member.UserData[USERDATA_FROMDESIGNER] = true;
                         mergedType.Members.Add(member);
-                        SetDesignerData(member);
                     }
-                    foreach (CodeTypeMember member in mainClass.Members)
+                    foreach (CodeTypeMember member in className.Members)
                     {
-                        member.UserData[USERDATA_FROMDESIGNER] = false;
+                        member.UserData[BooCodeDomHelper.USERDATA_FROMDESIGNER] = false;
                         mergedType.Members.Add(member);
-                        SetDesignerData(member);
                     }
                     // A class is always in a NameSpace
-                    CodeNamespace mergedNamespace = new CodeNamespace(designerNamespace.Name);
+                    CodeNamespace mergedNamespace = new CodeNamespace(nameSpace.Name);
                     mergedNamespace.Types.Add(mergedType);
                     // Now, add it to the CompileUnit
                     mergedCodeCompileUnit.Namespaces.Clear();
@@ -140,15 +147,66 @@ namespace Hill30.BooProject.LanguageService
                 else
                 {
                     // Something went wrong, return the designer CodeCompileUnit
-                    mergedCodeCompileUnit = compileUnit;
+                    mergedCodeCompileUnit = designerCompileUnit;
                 }
             }
             else
             {
                 // Sorry, no designer class
-                mergedCodeCompileUnit = compileUnit;
+                mergedCodeCompileUnit = designerCompileUnit;
             }
             return mergedCodeCompileUnit;
+        }
+
+        /// <summary>
+        /// Reading the CodeCompileUnit, enumerate all NameSpaces, enumerate All Types, searching for the first Class declaration
+        /// </summary>
+        /// <param name="ccu"></param>
+        /// <returns></returns>
+        public static CodeTypeDeclaration FindFirstClass(CodeCompileUnit ccu)
+        {
+            CodeNamespace namespaceName;
+            return FindFirstClass(ccu, out namespaceName);
+        }
+
+        public static List<CodeTypeDeclaration> FindPartialClasses(CodeCompileUnit ccu)
+        {
+            var result = new List<CodeTypeDeclaration>();
+            foreach (CodeNamespace namespace2 in ccu.Namespaces)
+            {
+                foreach (CodeTypeDeclaration declaration in namespace2.Types)
+                {
+                    //  The first Type == The first Class declaration
+                    if (declaration.IsClass && declaration.IsPartial)
+                    {
+                        result.Add(declaration);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static CodeTypeDeclaration FindFirstClass(CodeCompileUnit ccu, out CodeNamespace namespaceName)
+        {
+            namespaceName = null;
+            CodeTypeDeclaration rstClass = null;
+            if (ccu != null)
+            {
+                foreach (CodeNamespace namespace2 in ccu.Namespaces)
+                {
+                    foreach (CodeTypeDeclaration declaration in namespace2.Types)
+                    {
+                        //  The first Type == The first Class declaration
+                        if (declaration.IsClass)
+                        {
+                            namespaceName = namespace2;
+                            rstClass = declaration;
+                            break;
+                        }
+                    }
+                }
+            }
+            return rstClass;
         }
 
         private static void SetDesignerData(CodeTypeMember member)
@@ -164,6 +222,20 @@ namespace Hill30.BooProject.LanguageService
             };
             member.UserData[typeof(CodeDomDesignerData)] = designerData;
             member.UserData[typeof(System.Drawing.Point)] = designerData.CaretPosition;
+        }
+
+        internal static CodeTypeDeclaration LimitToDesignerClass(CodeCompileUnit ccu)
+        {
+            var result = FindDesignerClass(ccu);
+            foreach (CodeNamespace nameSpace in ccu.Namespaces)
+            {
+                foreach (var typeElement in nameSpace.Types.Cast<CodeTypeDeclaration>().ToArray())
+                {
+                    if (typeElement != result)
+                        nameSpace.Types.Remove(typeElement);
+                }
+            }
+            return result;
         }
 
         /// <summary>
