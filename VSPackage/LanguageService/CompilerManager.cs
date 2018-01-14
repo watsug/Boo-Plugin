@@ -25,23 +25,24 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell.Design;
+using Microsoft.VisualStudio.Shell.Interop;
 using Hill30.Boo.ASTMapper;
 
 namespace Hill30.BooProject.Compilation
 {
     public class CompilerManager
     {
-        private readonly List<IFileNode> compileList = new List<IFileNode>();
-        private readonly BooProjectNode projectManager;
-        private readonly Dictionary<uint, AssemblyEntry> references = new Dictionary<uint, AssemblyEntry>();
-        private IDisposable typeResolverContext;
-        private ITypeResolutionService typeResolver;
-        private bool referencesDirty;
+        private readonly List<IFileNode> _compileList = new List<IFileNode>();
+        private readonly BooProjectNode _projectManager;
+        private readonly Dictionary<uint, AssemblyEntry> _references = new Dictionary<uint, AssemblyEntry>();
+        private IDisposable _typeResolverContext;
+        private ITypeResolutionService _typeResolver;
+        private bool _referencesDirty;
 
         public CompilerManager(BooProjectNode projectManager)
         {
-            this.projectManager = projectManager;
-            references.Add((uint)VSConstants.VSITEMID.Root, new AssemblyEntry(new AssemblyName("mscorlib")));
+            _projectManager = projectManager;
+            _references.Add((uint)VSConstants.VSITEMID.Root, new AssemblyEntry(new AssemblyName("mscorlib"), _projectManager));
         }
 
         public void Initialize()
@@ -53,7 +54,7 @@ namespace Hill30.BooProject.Compilation
 
         private void ResetAssemblyReferences(Assembly assembly)
         {
-            foreach (var reference in references.Values)
+            foreach (var reference in _references.Values)
                 reference.Refresh(assembly);
             UpdateReferences();
         }
@@ -75,39 +76,42 @@ namespace Hill30.BooProject.Compilation
 
         internal void AddReference(ReferenceNode referenceNode)
         {
-            references.Add(referenceNode.ID, new AssemblyEntry(referenceNode));
+            _references.Add(referenceNode.ID, new AssemblyEntry(referenceNode, _projectManager));
             UpdateReferences();
         }
 
-        class AssemblyEntry
+		class AssemblyEntry
         {
-            private readonly ReferenceNode reference;
-            private Assembly assembly;
-            readonly AssemblyName assemblyName;
+            private readonly ReferenceNode _reference;
+            private Assembly _assembly;
+            readonly AssemblyName _assemblyName;
+			readonly BooProjectNode _project;
 
-            public AssemblyEntry(AssemblyName assemblyName)
+            public AssemblyEntry(AssemblyName assemblyName, BooProjectNode project)
             {
-                this.assemblyName = assemblyName;
+                _assemblyName = assemblyName;
+				_project = project;
+			}
+
+            public AssemblyEntry(ReferenceNode reference, BooProjectNode project)
+            {
+                _reference = reference;
+				_project = project;
             }
 
-            public AssemblyEntry(ReferenceNode reference)
+			private AssemblyName GetAssemblyName()
             {
-                this.reference = reference;
-            }
-
-            private AssemblyName GetAssemblyName()
-            {
-                var assemblyReference = reference as AssemblyReferenceNode;
+                var assemblyReference = _reference as AssemblyReferenceNode;
                 if (assemblyReference != null)
                     return assemblyReference.AssemblyName;
 
-                var projectReference = reference as ProjectReferenceNode;
+                var projectReference = _reference as ProjectReferenceNode;
                 if (projectReference != null)
                     // Now get the name of the assembly from the project.
                     // Some project system throw if the property does not exist. We expect an ArgumentException.
                     try
                     {
-                        var assemblyNameProperty = projectReference.ReferencedProjectObject.Properties.Item("OutputFileName");
+						var assemblyNameProperty = projectReference.ReferencedProjectObject.Properties.Item("OutputFileName");
 // ReSharper disable AssignNullToNotNullAttribute
                         return new AssemblyName(Path.GetFileNameWithoutExtension(assemblyNameProperty.Value.ToString()));
 // ReSharper restore AssignNullToNotNullAttribute
@@ -118,50 +122,69 @@ namespace Hill30.BooProject.Compilation
                 return null;
             }
 
-            public void Refresh(Assembly target)
+			private Assembly GetAssemblyFromProjectRef(ProjectReferenceNode projectReference)
+			{
+				var project = projectReference.ReferencedProjectObject;
+				var groups = project.ConfigurationManager.ActiveConfiguration.OutputGroups;
+				var group = groups.OfType<EnvDTE.OutputGroup>().Single(g => g.CanonicalName == "Built");
+				var filenames = ((object[])group.FileURLs).Cast<string>().ToArray();
+				var filename = filenames.Single(f => f.EndsWith(".dll") || f.EndsWith(".exe"));
+				var lastSlash = filename.LastIndexOf('/');
+				if (lastSlash >= 0)
+					filename = filename.Substring(lastSlash + 1);
+				return Assembly.LoadFile(filename);
+			}
+
+			public void Refresh(Assembly target)
             {
-                if (assembly != null && assembly.FullName == target.FullName)
-                    assembly = null;// target;
+                if (_assembly != null && _assembly.FullName == target.FullName)
+                    _assembly = null;// target;
             }
             
             public Assembly GetAssembly(Func<AssemblyName, Assembly> assemblyResolver)
             { 
-                if (assembly == null)
+                if (_assembly == null)
                 {
-                    var aName = assemblyName ?? GetAssemblyName();
-                    if (aName != null)
-                        assembly = (Assembly)Application.Current.Dispatcher.Invoke(assemblyResolver, aName);
+                    var aName = _assemblyName ?? GetAssemblyName();
+					if (aName != null)
+					{
+						_assembly = (Assembly)Application.Current.Dispatcher.Invoke(assemblyResolver, aName);
+					}
+					else if (_reference is ProjectReferenceNode)
+					{
+						_assembly = GetAssemblyFromProjectRef((ProjectReferenceNode)_reference);
+					}
                 }
-                return assembly;
+                return _assembly;
             } 
         }
 
         internal void RemoveReference(ReferenceNode referenceNode)
         {
-            references.Remove(referenceNode.ID);
+            _references.Remove(referenceNode.ID);
             UpdateReferences();
         }
 
         private void UpdateReferences()
         {
             var sources = GlobalServices.LanguageService.GetSources();
-            lock (compileList)
+            lock (_compileList)
             {
                 lock (sources)
                 {
                     foreach (Source source in sources)
                         source.IsDirty = true;
                 }
-                referencesDirty = true;
+                _referencesDirty = true;
             }
         }
 
         internal void SubmitForCompile(IFileNode file)
         {
-            if (projectManager.IsCodeFile(file.Url) && file.ItemName == "Compile")
-                lock (compileList)
+            if (_projectManager.IsCodeFile(file.Url) && file.ItemName == "Compile")
+                lock (_compileList)
                 {
-                    compileList.Add(file);
+                    _compileList.Add(file);
                 }
         }
 
@@ -170,29 +193,29 @@ namespace Hill30.BooProject.Compilation
 
             List<IFileNode> localCompileList;
             bool recompileAll;
-            lock (compileList)
+            lock (_compileList)
             {
-                if (typeResolverContext == null)
+                if (_typeResolverContext == null)
                 {
                     Action itr = () =>
                     {
-                        typeResolverContext = GlobalServices.TypeService.GetContextTypeResolver(projectManager);
-                        typeResolver = GlobalServices.TypeService.GetTypeResolutionService(projectManager);
+                        _typeResolverContext = GlobalServices.TypeService.GetContextTypeResolver(_projectManager);
+                        _typeResolver = GlobalServices.TypeService.GetTypeResolutionService(_projectManager);
                         //hack to ensure that necessary internal state gets initialized
-                        typeResolver.GetPathOfAssembly(new AssemblyName("mscorlib.dll"));
+                        _typeResolver.GetPathOfAssembly(new AssemblyName("mscorlib.dll"));
                     };
                     Application.Current.Dispatcher.Invoke(itr);
                 }
-                localCompileList = new List<IFileNode>(compileList);
-                compileList.Clear();
-                if (localCompileList.Count == 0 && !referencesDirty)
+                localCompileList = new List<IFileNode>(_compileList);
+                _compileList.Clear();
+                if (localCompileList.Count == 0 && !_referencesDirty)
                     return;
-                recompileAll = referencesDirty;
-                referencesDirty = false;
+                recompileAll = _referencesDirty;
+                _referencesDirty = false;
             }
 
             var results = new Dictionary<IFileNode, CompileResults>();
-            foreach (var file in BooProjectNode.GetFileEnumerator(projectManager))
+            foreach (var file in BooProjectNode.GetFileEnumerator(_projectManager))
                 if (recompileAll || localCompileList.Contains(file))
                 {
                     // this seemingly redundant variable ensures that each closure below has its own copy of
@@ -204,20 +227,46 @@ namespace Hill30.BooProject.Compilation
                 else
                     results.Add(file, file.GetCompileResults());
 
-            Boo.ASTMapper.CompilerManager.Compile(            
-                GlobalServices.LanguageService.GetLanguagePreferences().TabSize,
-                references.Values.Select(ae => ae.GetAssembly(typeResolver.GetAssembly)).Where(a => a != null), 
-                results.Values);
+			var resolver = BuildAssemblyResolver();
+			AppDomain.CurrentDomain.AssemblyResolve += resolver;
+			try
+			{
+				Boo.ASTMapper.CompilerManager.Compile(
+					GlobalServices.LanguageService.GetLanguagePreferences().TabSize,
+					_references.Values.Select(ae => ae.GetAssembly(_typeResolver.GetAssembly)).Where(a => a != null),
+					results.Values);
+			}
+			finally
+			{
+				AppDomain.CurrentDomain.AssemblyResolve -= resolver;
+			}
 
             foreach (var result in results)
                 result.Key.SetCompilerResults(result.Value);
 
         }
 
-        public void Dispose()
+		private ResolveEventHandler BuildAssemblyResolver()
+		{
+			return (s, args) => {
+				if (args.RequestingAssembly == null) return null;
+				var loc = Path.GetDirectoryName(args.RequestingAssembly.Location);
+				var asmName = args.Name.Split(',')[0] + ".dll";
+				var filename = Path.Combine(loc, asmName);
+				if (File.Exists(filename))
+					return Assembly.LoadFrom(filename);
+				asmName = Path.ChangeExtension(asmName, ".exe");
+				filename = Path.Combine(loc, asmName);
+				if (File.Exists(filename))
+					return Assembly.LoadFrom(filename);
+				return null;
+			};
+		}
+
+		public void Dispose()
         {
-            if (typeResolverContext != null)
-                typeResolverContext.Dispose();
+            if (_typeResolverContext != null)
+                _typeResolverContext.Dispose();
             GlobalServices.TypeService.AssemblyRefreshed -= AssemblyRefreshed;
             GlobalServices.TypeService.AssemblyObsolete -= AssemblyObsolete;
             GlobalServices.TypeService.AssemblyDeleted -= AssemblyDeleted;
