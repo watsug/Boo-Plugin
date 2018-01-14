@@ -1,6 +1,6 @@
 ﻿using Boo.Lang.Compiler.Pipelines;
 
-namespace boocNET40
+namespace boocNET451
 {
     public class PipeLine : CompileToFile
     {

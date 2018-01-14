@@ -1,6 +1,6 @@
 ﻿using booc;
 
-namespace boocNET40
+namespace boocNET451
 {
     class Program
     {
