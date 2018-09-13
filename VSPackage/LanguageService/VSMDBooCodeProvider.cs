@@ -11,7 +11,7 @@ namespace Hill30.BooProject.LanguageService
 {
     class VSMDBooCodeProvider : IVSMDCodeDomProvider
     {
-        private readonly BooCodeProvider _provider;
+        private readonly BooCodeProviderEx _provider;
         private readonly ReferenceContainerNode _references;
         private readonly IFileNode _file;
 

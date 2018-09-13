@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Boo.Lang.CodeDom;
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
@@ -13,11 +12,10 @@ using Boo.Lang.Compiler.IO;
 using Pipelines = Boo.Lang.Compiler.Pipelines;
 using Hill30.Boo.ASTMapper;
 using Microsoft.VisualStudio.Shell.Design.Serialization;
-using Microsoft.VisualStudio.Text;
 
 namespace Hill30.BooProject.LanguageService
 {
-    class VSBooCodeProvider: BooCodeProvider
+    class VSBooCodeProvider: BooCodeProviderEx
     {
         private readonly IFileNode _baseFileNode;
 
@@ -264,7 +262,7 @@ namespace Hill30.BooProject.LanguageService
         private void WriteNewMethods(List<CodeMemberMethod> newMethods, string designerFilename, string className)
         {
             var filename = designerFilename.Replace(".Designer.boo", ".boo");
-            var codegen = new BooCodeGenerator();
+            var codegen = new BooCodeGeneratorEx();
             var indentString = GetIndentString(filename);
             var newCode = codegen.GenerateNewCode(newMethods, indentString);
             var insertPoint = GetCodeInsertionLine(filename, className);
