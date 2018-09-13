@@ -253,7 +253,6 @@ UpgradeLog.*
 BusinessService/Web.config
 BusinessService/Web.Debug.config
 BusinessService/Web.Release.config
-[Aa]pp.config
 .vs/
 WxPayAPI/lib/Config.cs
 WxPayAPI/Properties/PublishProfiles/WxPayWebConfig.pubxml

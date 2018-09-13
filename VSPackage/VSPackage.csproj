@@ -350,23 +350,23 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\BoocNET45\bin\Release\boocNET45.exe">
+    <Content Include="..\BoocNET45\bin\$(ConfigurationName)\boocNET45.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\BoocNET451\bin\Release\boocNET451.exe">
+    <Content Include="..\BoocNET451\bin\$(ConfigurationName)\boocNET451.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\BoocNET452\bin\Release\boocNET452.exe">
+    <Content Include="..\BoocNET452\bin\$(ConfigurationName)\boocNET452.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\BoocNET46\bin\Release\boocNET46.exe">
+    <Content Include="..\BoocNET46\bin\$(ConfigurationName)\boocNET46.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\BoocNET461\bin\Release\boocNET461.exe">
+    <Content Include="..\BoocNET461\bin\$(ConfigurationName)\boocNET461.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
@@ -426,7 +426,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
-    <Content Include="..\MSBuildUtilities\bin\Release\Boo.MSBuildUtilities.dll">
+    <Content Include="..\MSBuildUtilities\bin\$(ConfigurationName)\Boo.MSBuildUtilities.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Boo_files</VSIXSubPath>
     </Content>
