@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="3ed37b82-3194-4ca8-96b4-d4e3feb8a35d" Version="0.7.0.0" Language="en-US" Publisher="watsug" />
+        <Identity Id="ECC5D38F-46A9-49E0-AC5C-4CAE313F16B6" Version="0.7.0.0" Language="en-US" Publisher="watsug" />
         <DisplayName>Visual Boo</DisplayName>
         <Description xml:space="preserve">
             Allows using Visual Studio as an IDE for programming in Boo.
