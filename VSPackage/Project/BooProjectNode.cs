@@ -24,6 +24,7 @@ using Hill30.Boo.ASTMapper;
 using Hill30.BooProject.Compilation;
 using Hill30.BooProject.LanguageService;
 using Hill30.BooProject.Project.ProjectProperties;
+using MSBuild = Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Project.Automation;
 using Microsoft.VisualStudio.Shell;
@@ -189,7 +190,7 @@ namespace Hill30.BooProject.Project
             var node = new BooFileNode(this, item);
 
             node.OleServiceProvider.AddService(typeof(EnvDTE.Project), new OleServiceProvider.ServiceCreatorCallback(CreateServices), false);
-            node.OleServiceProvider.AddService(typeof(ProjectItem), node.ServiceCreator, false);
+            node.OleServiceProvider.AddService(typeof(EnvDTE.ProjectItem), node.ServiceCreator, false);
             node.OleServiceProvider.AddService(typeof(VSProject), new OleServiceProvider.ServiceCreatorCallback(CreateServices), false);
             compilerManager.SubmitForCompile(node);
             var include = item.GetMetadata(ProjectFileConstants.Include);
@@ -292,6 +293,14 @@ namespace Hill30.BooProject.Project
                         continue;
         }
 
+        /// <summary>
+        /// Walks the subpaths of a project relative path and checks if the folder nodes hierarchy is already there, if not creates it.
+        /// </summary>
+        /// <param name="strPath">Path of the folder, can be relative to project or absolute</param>
+        public override HierarchyNode CreateFolderNodes(string path)
+        {
+            return this;
+        }
 
         public void SubmitForCompile(IFileNode file)
         {
